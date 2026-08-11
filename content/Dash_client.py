@@ -86,7 +86,7 @@ g.annotation rect { rx:6px; ry:6px; }
 class OpticNerveClient:
     """Client for the dashboard's stateless figure-generation API."""
 
-    def __init__(self, base_url="https://oct-t1-dashboard.onrender.com"):
+    def __init__(self, base_url="https://pettiness-junkyard-unpainted.ngrok-free.dev"):
         self.base_url = base_url
         self._subjects = None
 
