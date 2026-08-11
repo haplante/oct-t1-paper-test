@@ -127,29 +127,10 @@ display(Javascript("""
         });
     }).observe(document.body, {childList: true, subtree: true});
 
-    function fit(el) {
-        if (el._natW == null) el._natW = el.scrollWidth;
-        var parent = el.parentElement;
-        if (!parent || !el._natW) return;
-        var avail = parent.clientWidth;
-        if (!avail) return;
-        parent.style.overflowX = 'hidden';   // transform:scale doesn't shrink the reserved flow width
-        el.style.transform = 'scale(' + Math.min(1, avail / el._natW) + ')';
-        el.style.transformOrigin = 'top center';
-    }
-    function fitAll() { document.querySelectorAll('.onp-fig-grid').forEach(fit); }
-    var ro = new ResizeObserver(fitAll);
-    new MutationObserver(function() {
-        document.querySelectorAll('.onp-fig-grid').forEach(function(el) {
-            if (el._observed) return;
-            el._observed = true;
-            if (el.parentElement) ro.observe(el.parentElement);
-            // wait a couple frames so the Plotly resize above (and layout
-            // settling in general) happens before we measure natural width.
-            requestAnimationFrame(function() { requestAnimationFrame(function() { fit(el); }); });
-        });
-    }).observe(document.body, {childList: true, subtree: true});
-    window.addEventListener('resize', fitAll);
+    // DIAGNOSTIC: the scale-down transform is temporarily disabled (was here
+    // before) to test the hypothesis that transform:scale on this container
+    // is what's corrupting Plotly's own internal legend/title/colorbar
+    // layout math. Do not reintroduce until that's confirmed either way.
 })();
 """))
 
