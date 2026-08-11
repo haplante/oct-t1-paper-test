@@ -3,11 +3,14 @@ version: 1
 project:
   title: 'Strong Coupling of Retinal Thickness and Optic Nerve Myelin in Vivo'
   github: https://github.com/haplante/oct-t1-paper
-  jupyter:
+  thebe:
+    enabled: true
     binder:
       url: https://terrarium.evidencepub.io
-      ref: main
       repo: haplante/oct-t1-paper-test
+      ref: main
+    kernel:
+      name: python3
   authors:
     - name: Hugo Albert Plante
       orcid: 0009-0008-9235-0097

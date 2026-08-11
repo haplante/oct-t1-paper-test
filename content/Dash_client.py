@@ -197,7 +197,7 @@ class OpticNerveClient:
 
         self._observe_all(subj_boxes, render)
         render()
-        box = widgets.GridBox([out, self._panel("Figure 1 options", [("Subjects", subj_grid)], "fig1")],
+        box = widgets.GridBox([out, self._panel("FiGuRe 1 options", [("Subjects", subj_grid)], "fig1")],
                                layout=widgets.Layout(grid_template_columns=f"{FIG_SIZE['fig1'][0]}px auto"))
         box.add_class("onp-fig-grid")
         display(box)
