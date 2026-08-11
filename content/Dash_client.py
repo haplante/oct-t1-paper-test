@@ -104,33 +104,39 @@ display(Javascript(f"""
 }})();
 """))
 
-# Plotly sometimes measures its own container (colorbar position, subplot
-# domains, ...) before Thebe's output area has settled into its final layout,
-# producing garbage geometry (a colorbar rendered 1000+px away from its own
-# figure). Force a clean Plotly relayout, and only THEN measure/scale our own
-# grid — both problems share the same "measured too early" root cause.
+# Plotly bakes automargin-positioned elements (title/legend/colorbar) as an
+# absolute-looking offset computed at first-draw time. If that happens before
+# Thebe's output area has scrolled/settled into its final position, the baked
+# offset is garbage (titles/legend rendered ~1800px off-screen, colorbar
+# ~2000px away from its own figure) and a mere resize() doesn't recompute it —
+# only a full relayout does. Trigger it once the plot is actually visible in
+# the viewport (IntersectionObserver), which is a much stronger settle signal
+# than a couple of animation frames.
 display(Javascript("""
 (function() {
     if (window.__onpFitObserving) return;
     window.__onpFitObserving = true;
 
-    function resizePlotly(el) {
-        if (window.Plotly && window.Plotly.Plots && el.data) {
-            try { window.Plotly.Plots.resize(el); } catch (e) {}
+    function relayoutPlotly(el) {
+        if (window.Plotly && el.data) {
+            try { window.Plotly.relayout(el, {autosize: true}); } catch (e) {}
         }
     }
+    var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                io.unobserve(entry.target);
+                relayoutPlotly(entry.target);
+            }
+        });
+    });
     new MutationObserver(function() {
         document.querySelectorAll('.js-plotly-plot').forEach(function(el) {
-            if (el._onpResized) return;
-            el._onpResized = true;
-            requestAnimationFrame(function() { requestAnimationFrame(function() { resizePlotly(el); }); });
+            if (el._onpObserved) return;
+            el._onpObserved = true;
+            io.observe(el);
         });
     }).observe(document.body, {childList: true, subtree: true});
-
-    // DIAGNOSTIC: the scale-down transform is temporarily disabled (was here
-    // before) to test the hypothesis that transform:scale on this container
-    // is what's corrupting Plotly's own internal legend/title/colorbar
-    // layout math. Do not reintroduce until that's confirmed either way.
 })();
 """))
 
