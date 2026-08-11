@@ -117,6 +117,7 @@ display(Javascript("""
         if (!parent || !el._natW) return;
         var avail = parent.clientWidth;
         if (!avail) return;
+        parent.style.overflowX = 'hidden';   // transform:scale doesn't shrink the reserved flow width
         el.style.transform = 'scale(' + Math.min(1, avail / el._natW) + ')';
         el.style.transformOrigin = 'top center';
     }
