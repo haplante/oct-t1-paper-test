@@ -66,7 +66,7 @@ def _graph_cfg(figid):
 # the notebook's own browser page.
 display(HTML("""<style>
 g.annotation rect { rx:6px; ry:6px; }
-.onp-fig-hbox { display:flex !important; flex-flow:row nowrap !important; align-items:flex-start !important; }
+.onp-fig-grid { display:grid !important; align-items:start !important; }
 .onp-panel { font-family:Arial,Helvetica,sans-serif; background:#fff; border:1px solid #ddd;
              border-radius:6px; padding:6px 8px; margin-left:0px; width:150px;
              box-sizing:border-box; overflow:hidden; gap:6px !important;
@@ -195,8 +195,9 @@ class OpticNerveClient:
 
         self._observe_all(subj_boxes, render)
         render()
-        box = widgets.HBox([out, self._panel("Figure 1 options", [("Subjects", subj_grid)], "fig1")])
-        box.add_class("onp-fig-hbox")
+        box = widgets.GridBox([out, self._panel("Figure 1 options", [("Subjects", subj_grid)], "fig1")],
+                               layout=widgets.Layout(grid_template_columns=f"{FIG_SIZE['fig1'][0]}px auto"))
+        box.add_class("onp-fig-grid")
         display(box)
         return out
 
@@ -236,8 +237,8 @@ class OpticNerveClient:
         render()
         panel = self._panel("Figure 2 options", [("Subjects", subj_grid), ("Macula sector", mac_w),
                                                   ("Disc sector", disc_w), ("T1 sector", band_w)], "fig2")
-        box = widgets.HBox([out, panel])
-        box.add_class("onp-fig-hbox")
+        box = widgets.GridBox([out, panel], layout=widgets.Layout(grid_template_columns=f"{FIG_SIZE['fig2'][0]}px auto"))
+        box.add_class("onp-fig-grid")
         display(box)
         return out
 
@@ -259,7 +260,7 @@ class OpticNerveClient:
         band_w.observe(render, names='value')
         render()
         panel = self._panel("Figure 3 options", [("Subjects", subj_grid), ("T1 sector", band_w)], "fig3")
-        box = widgets.HBox([out, panel])
-        box.add_class("onp-fig-hbox")
+        box = widgets.GridBox([out, panel], layout=widgets.Layout(grid_template_columns=f"{FIG_SIZE['fig3'][0]}px auto"))
+        box.add_class("onp-fig-grid")
         display(box)
         return out
