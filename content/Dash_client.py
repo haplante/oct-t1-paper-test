@@ -66,6 +66,8 @@ def _graph_cfg(figid):
 # the notebook's own browser page.
 display(HTML("""<style>
 g.annotation rect { rx:6px; ry:6px; }
+.svg-container.svg-container.svg-container { position:relative !important; }
+.svg-container.svg-container.svg-container > svg.main-svg { position:absolute !important; top:0 !important; left:0 !important; }
 .onp-fig-grid.onp-fig-grid.onp-fig-grid { display:grid !important; align-items:start !important; }
 .onp-panel { font-family:Arial,Helvetica,sans-serif; background:#fff; border:1px solid #ddd;
              border-radius:6px; padding:6px 8px; margin-left:0px; width:150px;
