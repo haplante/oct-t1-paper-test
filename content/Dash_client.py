@@ -66,6 +66,7 @@ def _graph_cfg(figid):
 # the notebook's own browser page.
 display(HTML("""<style>
 g.annotation rect { rx:6px; ry:6px; }
+.onp-fig-hbox { display:flex !important; flex-flow:row nowrap !important; align-items:flex-start !important; }
 .onp-panel { font-family:Arial,Helvetica,sans-serif; background:#fff; border:1px solid #ddd;
              border-radius:6px; padding:6px 8px; margin-left:0px; width:150px;
              box-sizing:border-box; overflow:hidden; gap:6px !important;
@@ -194,8 +195,9 @@ class OpticNerveClient:
 
         self._observe_all(subj_boxes, render)
         render()
-        display(widgets.HBox([out, self._panel("Figure 1 options", [("Subjects", subj_grid)], "fig1")],
-                              layout=widgets.Layout(display="flex", flex_flow="row nowrap", align_items="flex-start")))
+        box = widgets.HBox([out, self._panel("Figure 1 options", [("Subjects", subj_grid)], "fig1")])
+        box.add_class("onp-fig-hbox")
+        display(box)
         return out
 
     def create_fig2_interface(self):
@@ -234,8 +236,9 @@ class OpticNerveClient:
         render()
         panel = self._panel("Figure 2 options", [("Subjects", subj_grid), ("Macula sector", mac_w),
                                                   ("Disc sector", disc_w), ("T1 sector", band_w)], "fig2")
-        display(widgets.HBox([out, panel],
-                              layout=widgets.Layout(display="flex", flex_flow="row nowrap", align_items="flex-start")))
+        box = widgets.HBox([out, panel])
+        box.add_class("onp-fig-hbox")
+        display(box)
         return out
 
     def create_fig3_interface(self):
@@ -256,6 +259,7 @@ class OpticNerveClient:
         band_w.observe(render, names='value')
         render()
         panel = self._panel("Figure 3 options", [("Subjects", subj_grid), ("T1 sector", band_w)], "fig3")
-        display(widgets.HBox([out, panel],
-                              layout=widgets.Layout(display="flex", flex_flow="row nowrap", align_items="flex-start")))
+        box = widgets.HBox([out, panel])
+        box.add_class("onp-fig-hbox")
+        display(box)
         return out
