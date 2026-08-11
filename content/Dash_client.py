@@ -69,7 +69,12 @@ _INJECTED_CSS = """
 g.annotation rect { rx:6px; ry:6px; }
 .svg-container.svg-container.svg-container { position:relative !important; }
 .svg-container.svg-container.svg-container > svg.main-svg { position:absolute !important; top:0 !important; left:0 !important; }
-.onp-fig-grid.onp-fig-grid.onp-fig-grid { display:grid !important; align-items:stretch !important; }
+.onp-fig-grid.onp-fig-grid.onp-fig-grid { display:grid !important; align-items:stretch !important;
+             width:fit-content !important; margin-left:auto !important; margin-right:auto !important; }
+/* Only the first (base/background) main-svg layer gets rounded — the title/legend
+   layer sits on top and shouldn't be clipped by it. */
+.svg-container.svg-container.svg-container > svg.main-svg:first-child {
+             border-radius:6px !important; overflow:hidden !important; }
 .onp-panel { font-family:Arial,Helvetica,sans-serif; background:#fff; border:1px solid #ddd;
              border-radius:6px; padding:6px 8px; margin-left:0px; width:150px;
              box-sizing:border-box; overflow:hidden; gap:6px !important;
@@ -78,8 +83,8 @@ g.annotation rect { rx:6px; ry:6px; }
 .onp-panel .onp-title { font-size:12px; font-weight:bold; color:#333; }
 .onp-panel .onp-lbl { font-size:10px; color:#555; }
 .onp-panel select { font-size:10px !important; border-radius:4px; border:1px solid #ccc; color:#111;
-             height:18px !important; padding:0 2px !important; }
-.onp-panel .widget-dropdown { width:100% !important; height:18px !important; }
+             height:18px !important; padding:0 2px !important; background:#fff !important; }
+.onp-panel .widget-dropdown { width:100% !important; height:18px !important; background:#fff !important; }
 .onp-subjlist { display:grid; grid-template-columns:repeat(2, auto); grid-gap:0px 8px; margin-bottom:0; }
 .onp-subjlist .widget-checkbox { width:auto; height:14px; min-height:14px; margin:0; }
 .onp-subjlist .widget-checkbox input[type=checkbox] { width:10px; height:10px; margin:0 3px 0 0; }
@@ -97,6 +102,36 @@ display(Javascript(f"""
     s.textContent = {_json.dumps(_INJECTED_CSS)};
     document.head.appendChild(s);
 }})();
+"""))
+
+# Scale each figure+panel grid down to fit its column width, but never up —
+# same technique as the dashboard's own fitStage() (see oct_t1_dashboard_only
+# app.py): scale = min(1, available/native), transform-scaled, never re-measured.
+display(Javascript("""
+(function() {
+    if (window.__onpFitObserving) return;
+    window.__onpFitObserving = true;
+    function fit(el) {
+        if (el._natW == null) el._natW = el.scrollWidth;
+        var parent = el.parentElement;
+        if (!parent || !el._natW) return;
+        var avail = parent.clientWidth;
+        if (!avail) return;
+        el.style.transform = 'scale(' + Math.min(1, avail / el._natW) + ')';
+        el.style.transformOrigin = 'top center';
+    }
+    function fitAll() { document.querySelectorAll('.onp-fig-grid').forEach(fit); }
+    var ro = new ResizeObserver(fitAll);
+    new MutationObserver(function() {
+        document.querySelectorAll('.onp-fig-grid').forEach(function(el) {
+            if (el._observed) return;
+            el._observed = true;
+            if (el.parentElement) ro.observe(el.parentElement);
+            fit(el);
+        });
+    }).observe(document.body, {childList: true, subtree: true});
+    window.addEventListener('resize', fitAll);
+})();
 """))
 
 
