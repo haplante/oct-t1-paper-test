@@ -9,7 +9,8 @@ import requests
 import plotly.graph_objects as go
 import plotly.io as pio
 import ipywidgets as widgets
-from IPython.display import display, HTML
+from IPython.display import display, HTML, Javascript
+import json as _json
 
 pio.renderers.default = "plotly_mimetype"
 
@@ -64,7 +65,7 @@ def _graph_cfg(figid):
 # and its sidebar look (background, label sizing) is likewise plain CSS. Both
 # apply directly here since these are live Plotly.js/ipywidgets instances in
 # the notebook's own browser page.
-display(HTML("""<style>
+_INJECTED_CSS = """
 g.annotation rect { rx:6px; ry:6px; }
 .svg-container.svg-container.svg-container { position:relative !important; }
 .svg-container.svg-container.svg-container > svg.main-svg { position:absolute !important; top:0 !important; left:0 !important; }
@@ -83,7 +84,20 @@ g.annotation rect { rx:6px; ry:6px; }
 .onp-subjlist .widget-checkbox { width:auto; height:14px; min-height:14px; margin:0; }
 .onp-subjlist .widget-checkbox input[type=checkbox] { width:10px; height:10px; margin:0 3px 0 0; }
 .onp-subjlist .widget-checkbox label { font-size:10px; line-height:14px; color:#1a5fb4; width:auto; }
-</style>"""))
+"""
+# display(HTML(...)) with a <style> tag gets its <style> stripped by Jupyter's
+# HTML sanitizer in the Thebe/MyST embed, so none of this ever reached the
+# page that way. Injecting via a script-created <style> element sidesteps
+# HTML sanitization entirely (script output isn't sanitized the same way).
+display(Javascript(f"""
+(function() {{
+    if (document.getElementById('onp-injected-style')) return;
+    var s = document.createElement('style');
+    s.id = 'onp-injected-style';
+    s.textContent = {_json.dumps(_INJECTED_CSS)};
+    document.head.appendChild(s);
+}})();
+"""))
 
 
 class OpticNerveClient:
