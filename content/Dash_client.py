@@ -69,11 +69,11 @@ _INJECTED_CSS = """
 g.annotation rect { rx:6px; ry:6px; }
 .svg-container.svg-container.svg-container { position:relative !important; }
 .svg-container.svg-container.svg-container > svg.main-svg { position:absolute !important; top:0 !important; left:0 !important; }
-.onp-fig-grid.onp-fig-grid.onp-fig-grid { display:grid !important; align-items:start !important; }
+.onp-fig-grid.onp-fig-grid.onp-fig-grid { display:grid !important; align-items:stretch !important; }
 .onp-panel { font-family:Arial,Helvetica,sans-serif; background:#fff; border:1px solid #ddd;
              border-radius:6px; padding:6px 8px; margin-left:0px; width:150px;
              box-sizing:border-box; overflow:hidden; gap:6px !important;
-             --jp-widgets-inline-height: 18px; }
+             --jp-widgets-inline-height: 18px; height:100% !important; }
 .onp-panel > * { margin:0 !important; }
 .onp-panel .onp-title { font-size:12px; font-weight:bold; color:#333; }
 .onp-panel .onp-lbl { font-size:10px; color:#555; }
