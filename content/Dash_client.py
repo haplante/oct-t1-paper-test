@@ -104,13 +104,29 @@ display(Javascript(f"""
 }})();
 """))
 
-# Scale each figure+panel grid down to fit its column width, but never up —
-# same technique as the dashboard's own fitStage() (see oct_t1_dashboard_only
-# app.py): scale = min(1, available/native), transform-scaled, never re-measured.
+# Plotly sometimes measures its own container (colorbar position, subplot
+# domains, ...) before Thebe's output area has settled into its final layout,
+# producing garbage geometry (a colorbar rendered 1000+px away from its own
+# figure). Force a clean Plotly relayout, and only THEN measure/scale our own
+# grid — both problems share the same "measured too early" root cause.
 display(Javascript("""
 (function() {
     if (window.__onpFitObserving) return;
     window.__onpFitObserving = true;
+
+    function resizePlotly(el) {
+        if (window.Plotly && window.Plotly.Plots && el.data) {
+            try { window.Plotly.Plots.resize(el); } catch (e) {}
+        }
+    }
+    new MutationObserver(function() {
+        document.querySelectorAll('.js-plotly-plot').forEach(function(el) {
+            if (el._onpResized) return;
+            el._onpResized = true;
+            requestAnimationFrame(function() { requestAnimationFrame(function() { resizePlotly(el); }); });
+        });
+    }).observe(document.body, {childList: true, subtree: true});
+
     function fit(el) {
         if (el._natW == null) el._natW = el.scrollWidth;
         var parent = el.parentElement;
@@ -128,7 +144,9 @@ display(Javascript("""
             if (el._observed) return;
             el._observed = true;
             if (el.parentElement) ro.observe(el.parentElement);
-            fit(el);
+            // wait a couple frames so the Plotly resize above (and layout
+            // settling in general) happens before we measure natural width.
+            requestAnimationFrame(function() { requestAnimationFrame(function() { fit(el); }); });
         });
     }).observe(document.body, {childList: true, subtree: true});
     window.addEventListener('resize', fitAll);
