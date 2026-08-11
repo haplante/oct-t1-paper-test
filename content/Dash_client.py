@@ -75,6 +75,11 @@ g.annotation rect { rx:6px; ry:6px; }
    layer sits on top and shouldn't be clipped by it. */
 .svg-container.svg-container.svg-container > svg.main-svg:first-child {
              border-radius:6px !important; overflow:hidden !important; }
+/* The title/legend layer's rotated y-axis title draws slightly outside its own
+   0-393 viewBox (Plotly quirk); SVG roots clip their own content to their own
+   bounds by default, so override that specifically for this layer. */
+.svg-container.svg-container.svg-container > svg.main-svg:nth-child(3) {
+             overflow:visible !important; }
 .onp-panel { font-family:Arial,Helvetica,sans-serif; background:#fff; border:1px solid #ddd;
              border-radius:6px; padding:6px 8px; margin-left:0px; width:150px;
              box-sizing:border-box; overflow:hidden; gap:6px !important;
