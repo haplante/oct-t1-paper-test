@@ -194,7 +194,8 @@ class OpticNerveClient:
 
         self._observe_all(subj_boxes, render)
         render()
-        display(widgets.HBox([out, self._panel("Figure 1 options", [("Subjects", subj_grid)], "fig1")]))
+        display(widgets.HBox([out, self._panel("Figure 1 options", [("Subjects", subj_grid)], "fig1")],
+                              layout=widgets.Layout(display="flex", flex_flow="row nowrap", align_items="flex-start")))
         return out
 
     def create_fig2_interface(self):
@@ -233,7 +234,8 @@ class OpticNerveClient:
         render()
         panel = self._panel("Figure 2 options", [("Subjects", subj_grid), ("Macula sector", mac_w),
                                                   ("Disc sector", disc_w), ("T1 sector", band_w)], "fig2")
-        display(widgets.HBox([out, panel]))
+        display(widgets.HBox([out, panel],
+                              layout=widgets.Layout(display="flex", flex_flow="row nowrap", align_items="flex-start")))
         return out
 
     def create_fig3_interface(self):
@@ -254,5 +256,6 @@ class OpticNerveClient:
         band_w.observe(render, names='value')
         render()
         panel = self._panel("Figure 3 options", [("Subjects", subj_grid), ("T1 sector", band_w)], "fig3")
-        display(widgets.HBox([out, panel]))
+        display(widgets.HBox([out, panel],
+                              layout=widgets.Layout(display="flex", flex_flow="row nowrap", align_items="flex-start")))
         return out
